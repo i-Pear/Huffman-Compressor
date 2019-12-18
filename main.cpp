@@ -115,13 +115,15 @@ namespace HuffmanCompressor{
     template<typename T>
     class HuffmanTreeNode{
 
+    public:
+
         int weight;
-        T* data;
-        HuffmanTreeNode* l,r;
+        const T* data;
+        HuffmanTreeNode* l,*r;
 
         HuffmanTreeNode(const T* data,int weight):weight(weight),data(data),l(nullptr),r(nullptr){} // 使用名称和权重初始化
 
-        HuffmanTreeNode(HuffmanTreeNode& a,HuffmanTreeNode& b):weight(a.weight+b.weight),data(nullptr),l(a),r(b){} // 将两个节点合并为一个
+        HuffmanTreeNode(HuffmanTreeNode& a,HuffmanTreeNode& b):weight(a.weight+b.weight),data(nullptr),l(&a),r(&b){} // 将两个节点合并为一个
 
         bool operator < (const HuffmanTreeNode& b)const{
             return weight<b.weight;
@@ -139,6 +141,9 @@ namespace HuffmanCompressor{
 
 }
 
-int main(){
+using namespace HuffmanCompressor;
 
+int main(){
+    int a;
+    HuffmanTreeNode<int> h(&a,1);
 }
