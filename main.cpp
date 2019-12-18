@@ -110,10 +110,13 @@ public:
 
 };
 
+
 namespace HuffmanCompressor{
 
     template<typename T>
     class HuffmanTreeNode{
+
+        typedef T* ptr;
 
     public:
 
@@ -130,12 +133,31 @@ namespace HuffmanCompressor{
         }
 
         HuffmanTreeNode operator + (const HuffmanTreeNode& b){
-            return {*this};
+            return HuffmanTreeNode(*this,b);
         }
 
     };
 
+    template<typename T>
+    static bool ptrCompare(const T*& a,const T*& b){
+        return *a<*b;
+    }
+
+    template<typename T>
     class HuffmanTree{
+
+        typedef T* ptr;
+
+    public:
+
+        list<HuffmanTreeNode<T>> cachedNode;
+        PriorityQueue<T*>* pq;
+
+
+
+        void create(){
+            pq=new PriorityQueue<T*>(&ptrCompare);
+        }
 
     };
 
