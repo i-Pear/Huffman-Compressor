@@ -5,15 +5,16 @@ using namespace std;
 template<typename T>
 class PriorityQueue{
 
-public:
-    static const int INIT_CAPACITY=8;
-    typedef T* ptr;
-    int capacity;
-    int size;
-    ptr* data; // Index starts from 1
+private:
 
-    PriorityQueue() : size(0),capacity(INIT_CAPACITY){
-        data=new T[capacity];
+    static const int INIT_CAPACITY=8;
+    int capacity;
+    int __size;
+    bool(*lessCompare)(const T&,const T&);
+    T*data; // Index starts from 1
+
+    static bool defaultCompare(const T& a,const T& b){
+        return a<b;
     }
 
     void enlarge(){
@@ -24,7 +25,7 @@ public:
     void shiftUp(int i){
         if(i==1)return;
         while(i!=1){
-            if(data[i]<data[i/2]){
+            if(lessCompare(data[i],data[i/2])){
                 swap(data[i],data[i/2]);
                 i/=2;
             }else{
@@ -37,14 +38,14 @@ public:
 
         int smallestIndex=i;
 
-        while(i*2<=size){
+        while(i*2<=__size){
 
-            if(data[smallestIndex]>data[i*2]){ // If exist left son
+            if(lessCompare(data[i*2],data[smallestIndex])){ // If exist left son
                 smallestIndex=i*2;
             }
 
-            if(i*2+1<=size){// If exist right son
-                if(data[smallestIndex]>data[i*2+1]){
+            if(i*2+1<=__size){// If exist right son
+                if(lessCompare(data[i*2+1],data[smallestIndex])){
                     smallestIndex=i*2+1;
                 }
             }
@@ -60,10 +61,22 @@ public:
 
     }
 
+public:
+
+    PriorityQueue() : __size(0),capacity(INIT_CAPACITY){
+        data=new T[capacity];
+        lessCompare=defaultCompare;
+    }
+
+    PriorityQueue(bool(*cmp)(const T&,const T&)) : __size(0),capacity(INIT_CAPACITY){
+        data=new T[capacity];
+        lessCompare=cmp;
+    }
+
     void insert(const T &val){
-        if(size+1==capacity)enlarge();
-        data[size++]=val;
-        shiftUp(size-1);
+        if(__size+1==capacity)enlarge();
+        data[__size++]=val;
+        shiftUp(__size-1);
     }
 
     const T &top() const{
@@ -71,9 +84,17 @@ public:
     }
 
     void pop(){
-        assert(size>0);
-        data[1]=data[size--];
+        assert(__size>0);
+        data[1]=data[__size--];
         shiftDown(1);
+    }
+
+    bool empty(){
+        return __size==0;
+    }
+
+    int size(){
+        return __size;
     }
 
     PriorityQueue & operator >> (T& ele){
@@ -106,7 +127,7 @@ namespace Compressor{
         }
 
         HuffmanTreeNode operator + (const HuffmanTreeNode& b){
-            return {*this,b};
+            return {*this};
         }
 
     };
