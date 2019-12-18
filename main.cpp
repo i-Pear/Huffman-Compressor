@@ -7,9 +7,10 @@ class PriorityQueue{
 
 public:
     static const int INIT_CAPACITY=8;
+    typedef T* ptr;
     int capacity;
     int size;
-    T*data; // Index starts from 1
+    ptr* data; // Index starts from 1
 
     PriorityQueue() : size(0),capacity(INIT_CAPACITY){
         data=new T[capacity];
@@ -90,7 +91,23 @@ public:
 
 namespace Compressor{
 
+    template<typename T>
     class HuffmanTreeNode{
+
+        int weight;
+        T* data;
+        HuffmanTreeNode* l,r;
+
+        HuffmanTreeNode(const T* data,int weight):weight(weight),data(data),l(nullptr),r(nullptr){}
+        HuffmanTreeNode(HuffmanTreeNode& a,HuffmanTreeNode& b):weight(a.weight+b.weight),data(nullptr),l(a),r(b){}
+
+        bool operator < (const HuffmanTreeNode& b)const{
+            return weight<b.weight;
+        }
+
+        HuffmanTreeNode operator + (const HuffmanTreeNode& b){
+            return {*this,b};
+        }
 
     };
 
