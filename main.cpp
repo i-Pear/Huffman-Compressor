@@ -147,11 +147,11 @@ public:
     }
 
     inline bool nextBit(){
-        if(bitPos&8){
+        if(bitPos&8U){
             bitPos=0;
             pos++;
         }
-        return data[pos]&(1<<bitPos);
+        return (data[pos])&(1U<<bitPos);
     }
 
     ~HuffmanAutoMachine(){
@@ -191,7 +191,6 @@ namespace HuffmanCompressor{
     static bool ptrCompare(const T*& a,const T*& b){
         return *a<*b;
     }
-
 
     template<typename T>
     class HuffmanTree{
