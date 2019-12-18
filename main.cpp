@@ -1,16 +1,17 @@
 #include <bits/stdc++.h>
+
 using namespace std;
 
-template <typename T>
+template<typename T>
 class PriorityQueue{
 
 public:
     static const int INIT_CAPACITY=8;
     int capacity;
     int size;
-    T* data; // Index starts from 1
+    T*data; // Index starts from 1
 
-    PriorityQueue():size(0),capacity(INIT_CAPACITY){
+    PriorityQueue() : size(0),capacity(INIT_CAPACITY){
         data=new T[capacity];
     }
 
@@ -58,13 +59,13 @@ public:
 
     }
 
-    void insert(const T& val){
+    void insert(const T &val){
         if(size+1==capacity)enlarge();
         data[size++]=val;
         shiftUp(size-1);
     }
 
-    const T& top()const{
+    const T &top() const{
         return data[1];
     }
 
@@ -72,6 +73,17 @@ public:
         assert(size>0);
         data[1]=data[size--];
         shiftDown(1);
+    }
+
+    PriorityQueue & operator >> (T& ele){
+        ele=top();
+        pop();
+        return *this;
+    }
+
+    PriorityQueue& operator<<(const T& ele){
+        insert(ele);
+        return *this;
     }
 
 };
