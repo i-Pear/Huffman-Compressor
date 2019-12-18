@@ -110,6 +110,33 @@ public:
 
 };
 
+class bitsProcessor{
+
+public:
+    char* data;
+    int length;
+    int pos;
+    unsigned int bitPos;
+
+    bitsProcessor(char* data,int length){
+        this->length=length;
+        memcpy(this->data,data,length);
+    }
+
+    inline bool nextBit(){
+        if(bitPos&8){
+            bitPos=0;
+            pos++;
+        }
+        return data[pos]&(1<<bitPos);
+    }
+
+    ~bitsProcessor(){
+        delete data;
+    }
+
+};
+
 
 namespace HuffmanCompressor{
 
