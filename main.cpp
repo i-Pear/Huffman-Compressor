@@ -116,8 +116,6 @@ namespace HuffmanCompressor{
     template<typename T>
     class HuffmanTreeNode{
 
-        typedef T* ptr;
-
     public:
 
         int weight;
@@ -138,30 +136,44 @@ namespace HuffmanCompressor{
 
     };
 
+
     template<typename T>
     static bool ptrCompare(const T*& a,const T*& b){
         return *a<*b;
     }
 
+
     template<typename T>
     class HuffmanTree{
 
-        typedef T* ptr;
-
     public:
 
-        list<HuffmanTreeNode<T>> cachedNode;
+        list<HuffmanTreeNode<T>> cachedNodes;
         PriorityQueue<T*>* pq;
-
-
+        HuffmanTreeNode<T>* head;
 
         void create(){
             pq=new PriorityQueue<T*>(&ptrCompare);
         }
 
+        void createHuffman(){
+            HuffmanTreeNode<T> a,b;
+            while(true){
+                if(pq->size()==1){
+                    head=pq->top();
+                    pq->pop();
+                    break;
+                }else{
+                    pq>>a>>b;
+                    pq<<a+b;
+                }
+            }
+        }
+
     };
 
 }
+
 
 using namespace HuffmanCompressor;
 
