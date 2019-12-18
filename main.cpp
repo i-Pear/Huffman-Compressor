@@ -110,13 +110,17 @@ public:
 
 };
 
+
 class bitsProcessor{
 
-public:
+private:
+
     char* data;
     int length;
     int pos;
     unsigned int bitPos;
+
+public:
 
     bitsProcessor(char* data,int length){
         this->length=length;
