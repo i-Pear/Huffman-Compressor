@@ -111,9 +111,28 @@ public:
 };
 
 
-class bitsProcessor{
+class HuffmanAutoMachine{
 
 private:
+
+    class AutoMachineNode{
+
+    public:
+
+        AutoMachineNode* zero,*one;
+        char content;
+
+        AutoMachineNode():zero(nullptr),one(nullptr),content(0){}
+
+        void connectZero(AutoMachineNode* n){
+            zero=n;
+        }
+
+        void connectOne(AutoMachineNode* n){
+            one=n;
+        }
+
+    };
 
     char* data;
     int length;
@@ -122,7 +141,7 @@ private:
 
 public:
 
-    bitsProcessor(char* data,int length){
+    HuffmanAutoMachine(char* data,int length){
         this->length=length;
         memcpy(this->data,data,length);
     }
@@ -135,7 +154,7 @@ public:
         return data[pos]&(1<<bitPos);
     }
 
-    ~bitsProcessor(){
+    ~HuffmanAutoMachine(){
         delete data;
     }
 
