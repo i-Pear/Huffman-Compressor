@@ -117,11 +117,12 @@ class HuffmanAutoMachine{
 
 private:
 
-    struct{
+    struct node{
         char content;
-        int l;
-        int r;
-    } dict[256];
+        int zero;
+        int one;
+    };
+    vector<node> dict;
 
     class PriorQueueNode{
 
@@ -144,6 +145,7 @@ private:
     int length;
     int pos;
     unsigned int bitPos;
+    int head;
 
 public:
 
@@ -168,19 +170,20 @@ public:
         PriorityQueue<PriorQueueNode> pq;
         for(int i=0;i<256;i++){
             if(count[i]){
-                holder.push_back()
-                pq.insert({i,count[i]});
+                dict.push_back({0,0,0});
+                pq.insert({pq.size()-1,count[i]});
             }
         }
         PriorQueueNode a,b;
         while(true){
             if(pq.size()==1){
-                head=pq.top();
+                head=pq.top().id;
                 pq.pop();
                 break;
             }else{
                 pq>>a>>b;
-
+                dict.push_back({0,a.id,b.id});
+                pq.insert({pq.size()-1,a.weight+b.weight});
             }
         }
     }
