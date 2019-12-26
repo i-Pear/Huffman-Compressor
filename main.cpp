@@ -115,7 +115,7 @@ public:
 
 class HuffmanAutoMachineCreator{
 
-private:
+public:
 
     struct node{
         char content;
@@ -148,14 +148,20 @@ private:
     unsigned int bitPos;
     int head;
 
-public:
+    
 
     HuffmanAutoMachineCreator(char*data,int length){
         this->dataLength=length;
-        memcpy(this->compressed,data,length*sizeof(char));
+        memcpy(this->data,data,length*sizeof(char));
+
+        head=0;
+        bitPos=pos=0;
     }
 
     void createHuffman(){
+
+        // Can init head
+
         int count[256]={0};
         for(int i=0;i<dataLength;i++){
             count[data[i]]++;
@@ -182,8 +188,8 @@ public:
     }
 
     ~HuffmanAutoMachineCreator(){
-        delete data;
-        delete compressed;
+        //delete data;
+        //delete compressed;
     }
 
 };
