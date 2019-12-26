@@ -10,10 +10,12 @@ private:
     static const int INIT_CAPACITY=8;
     int capacity;
     int __size;
-    bool(*lessCompare)(const T&,const T&);
+
+    bool (*lessCompare)(const T &,const T &);
+
     T*data; // Index starts from 1
 
-    static bool defaultCompare(const T& a,const T& b){
+    static bool defaultCompare(const T &a,const T &b){
         return a<b;
     }
 
@@ -68,7 +70,7 @@ public:
         lessCompare=defaultCompare;
     }
 
-    PriorityQueue(bool(*cmp)(const T&,const T&)) : __size(0),capacity(INIT_CAPACITY){
+    PriorityQueue(bool(*cmp)(const T &,const T &)) : __size(0),capacity(INIT_CAPACITY){
         data=new T[capacity];
         lessCompare=cmp;
     }
@@ -97,13 +99,13 @@ public:
         return __size;
     }
 
-    PriorityQueue & operator >> (T& ele){
+    PriorityQueue &operator>>(T &ele){
         ele=top();
         pop();
         return *this;
     }
 
-    PriorityQueue& operator<<(const T& ele){
+    PriorityQueue &operator<<(const T &ele){
         insert(ele);
         return *this;
     }
@@ -115,6 +117,12 @@ class HuffmanAutoMachine{
 
 private:
 
+    struct{
+        char content;
+        int l;
+        int r;
+    } dict[256];
+
     class PriorQueueNode{
 
     public:
@@ -122,45 +130,24 @@ private:
         int weight;
         int id;
 
-        PriorQueueNode(int id,int weight): id(id),weight(weight){} // 使用编号和权重初始化
+        PriorQueueNode(int id,int weight) : id(id),weight(weight){} // 使用编号和权重初始化
         PriorQueueNode(){}
 
-        bool operator < (const PriorQueueNode& b)const{
+        bool operator<(const PriorQueueNode &b) const{
             return weight<b.weight;
         }
 
     }; // 创建哈弗曼树时，用于优先队列节点
 
-    class AutoMachineNode{
-
-    public:
-
-        AutoMachineNode* zero,*one;
-        char content;
-
-        AutoMachineNode():zero(nullptr),one(nullptr),content(0){}
-
-        void connectZero(AutoMachineNode* n){
-            zero=n;
-        }
-
-        void connectOne(AutoMachineNode* n){
-            one=n;
-        }
-
-    }; // 解压数据时，用于构造自动机
-
-    vector<AutoMachineNode*> holder;
-
-    unsigned char* compressed;
-    unsigned char* data;
+    unsigned char*compressed;
+    unsigned char*data;
     int length;
     int pos;
     unsigned int bitPos;
 
 public:
 
-    HuffmanAutoMachine(char* data,int length){
+    HuffmanAutoMachine(char*data,int length){
         this->length=length;
         memcpy(this->compressed,data,length*sizeof(char));
     }
@@ -179,6 +166,12 @@ public:
             count[data[i]]++;
         }
         PriorityQueue<PriorQueueNode> pq;
+        for(int i=0;i<256;i++){
+            if(count[i]){
+                holder.push_back()
+                pq.insert({i,count[i]});
+            }
+        }
         PriorQueueNode a,b;
         while(true){
             if(pq.size()==1){
@@ -187,21 +180,19 @@ public:
                 break;
             }else{
                 pq>>a>>b;
-                pq<<a+b;
+
             }
         }
     }
 
     ~HuffmanAutoMachine(){
-        for(auto&i:holder){
-            delete(i);
+        for(auto &i:holder){
+            delete (i);
         }
         delete compressed;
     }
 
 };
-
-
 
 
 int main(){
