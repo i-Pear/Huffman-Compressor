@@ -186,6 +186,10 @@ public:
         }
     }
 
+    void writeToFile(string path){
+
+    }
+
     ~HuffmanEncoder(){
         //delete data;
         //delete compressed;
@@ -206,22 +210,6 @@ public:
     };
     vector<node> dict;
 
-    class PriorQueueNode{
-
-    public:
-
-        int weight;
-        int id;
-
-        PriorQueueNode(int id,int weight) : id(id),weight(weight){} // 使用编号和权重初始化
-        PriorQueueNode(){}
-
-        bool operator<(const PriorQueueNode &b) const{
-            return weight<b.weight;
-        }
-
-    }; // 创建哈弗曼树时，用于优先队列节点
-
     unsigned char*compressed;
     int compressedLength;
     unsigned char*data;
@@ -239,33 +227,16 @@ public:
         bitPos=pos=0;
     }
 
-    void createHuffman(){
+    void readFromFile(string path){
 
-        // Can init head
+    }
 
-        int count[256]={0};
-        for(int i=0;i<dataLength;i++){
-            count[data[i]]++;
+    inline bool nextBit(){
+        if(bitPos&8U){
+            bitPos=0;
+            ++pos;
         }
-        PriorityQueue<PriorQueueNode> pq;
-        for(int i=0;i<256;i++){
-            if(count[i]){
-                dict.push_back({0,0,0});
-                pq.insert({pq.size()-1,count[i]});
-            }
-        }
-        PriorQueueNode a,b;
-        while(true){
-            if(pq.size()==1){
-                head=pq.top().id;
-                pq.pop();
-                break;
-            }else{
-                pq>>a>>b;
-                dict.push_back({0,a.id,b.id});
-                pq.insert({pq.size()-1,a.weight+b.weight});
-            }
-        }
+        return (compressed[pos])&(1U<<bitPos);
     }
 
     ~HuffmanDecoder(){
@@ -275,16 +246,6 @@ public:
 
 };
 
-
-
-
-inline bool nextBit(){
-    if(bitPos&8U){
-        bitPos=0;
-        ++pos;
-    }
-    return (compressed[pos])&(1U<<bitPos);
-}
 
 
 int main(){
