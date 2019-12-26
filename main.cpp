@@ -113,7 +113,7 @@ public:
 }; // 优先队列 模板类
 
 
-class HuffmanAutoMachineCreator{
+class HuffmanEncoder{
 
 public:
 
@@ -148,9 +148,8 @@ public:
     unsigned int bitPos;
     int head;
 
-    
 
-    HuffmanAutoMachineCreator(char*data,int length){
+    HuffmanEncoder(char*data,int length){
         this->dataLength=length;
         memcpy(this->data,data,length*sizeof(char));
 
@@ -187,7 +186,89 @@ public:
         }
     }
 
-    ~HuffmanAutoMachineCreator(){
+    ~HuffmanEncoder(){
+        //delete data;
+        //delete compressed;
+    }
+
+};
+
+
+
+class HuffmanDecoder{
+
+public:
+
+    struct node{
+        char content;
+        int zero;
+        int one;
+    };
+    vector<node> dict;
+
+    class PriorQueueNode{
+
+    public:
+
+        int weight;
+        int id;
+
+        PriorQueueNode(int id,int weight) : id(id),weight(weight){} // 使用编号和权重初始化
+        PriorQueueNode(){}
+
+        bool operator<(const PriorQueueNode &b) const{
+            return weight<b.weight;
+        }
+
+    }; // 创建哈弗曼树时，用于优先队列节点
+
+    unsigned char*compressed;
+    int compressedLength;
+    unsigned char*data;
+    int dataLength;
+    int pos;
+    unsigned int bitPos;
+    int head;
+
+
+    HuffmanDecoder(char*data,int length){
+        this->dataLength=length;
+        memcpy(this->data,data,length*sizeof(char));
+
+        head=0;
+        bitPos=pos=0;
+    }
+
+    void createHuffman(){
+
+        // Can init head
+
+        int count[256]={0};
+        for(int i=0;i<dataLength;i++){
+            count[data[i]]++;
+        }
+        PriorityQueue<PriorQueueNode> pq;
+        for(int i=0;i<256;i++){
+            if(count[i]){
+                dict.push_back({0,0,0});
+                pq.insert({pq.size()-1,count[i]});
+            }
+        }
+        PriorQueueNode a,b;
+        while(true){
+            if(pq.size()==1){
+                head=pq.top().id;
+                pq.pop();
+                break;
+            }else{
+                pq>>a>>b;
+                dict.push_back({0,a.id,b.id});
+                pq.insert({pq.size()-1,a.weight+b.weight});
+            }
+        }
+    }
+
+    ~HuffmanDecoder(){
         //delete data;
         //delete compressed;
     }
