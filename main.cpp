@@ -113,7 +113,7 @@ public:
 }; // 优先队列 模板类
 
 
-class HuffmanAutoMachine{
+class HuffmanAutoMachineCreator{
 
 private:
 
@@ -141,30 +141,23 @@ private:
     }; // 创建哈弗曼树时，用于优先队列节点
 
     unsigned char*compressed;
+    int compressedLength;
     unsigned char*data;
-    int length;
+    int dataLength;
     int pos;
     unsigned int bitPos;
     int head;
 
 public:
 
-    HuffmanAutoMachine(char*data,int length){
-        this->length=length;
+    HuffmanAutoMachineCreator(char*data,int length){
+        this->dataLength=length;
         memcpy(this->compressed,data,length*sizeof(char));
-    }
-
-    inline bool nextBit(){
-        if(bitPos&8U){
-            bitPos=0;
-            ++pos;
-        }
-        return (compressed[pos])&(1U<<bitPos);
     }
 
     void createHuffman(){
         int count[256]={0};
-        for(int i=0;i<length;i++){
+        for(int i=0;i<dataLength;i++){
             count[data[i]]++;
         }
         PriorityQueue<PriorQueueNode> pq;
@@ -188,14 +181,23 @@ public:
         }
     }
 
-    ~HuffmanAutoMachine(){
-        for(auto &i:holder){
-            delete (i);
-        }
+    ~HuffmanAutoMachineCreator(){
+        delete data;
         delete compressed;
     }
 
 };
+
+
+
+
+inline bool nextBit(){
+    if(bitPos&8U){
+        bitPos=0;
+        ++pos;
+    }
+    return (compressed[pos])&(1U<<bitPos);
+}
 
 
 int main(){
