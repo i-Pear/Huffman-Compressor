@@ -108,12 +108,28 @@ public:
         return *this;
     }
 
-};
+}; // 优先队列 模板类
 
 
 class HuffmanAutoMachine{
 
 private:
+
+    class PriorQueueNode{
+
+    public:
+
+        int weight;
+        int id;
+
+        PriorQueueNode(int id,int weight): id(id),weight(weight){} // 使用编号和权重初始化
+        PriorQueueNode(){}
+
+        bool operator < (const PriorQueueNode& b)const{
+            return weight<b.weight;
+        }
+
+    }; // 创建哈弗曼树时，用于优先队列节点
 
     class AutoMachineNode{
 
@@ -132,9 +148,12 @@ private:
             one=n;
         }
 
-    };
+    }; // 解压数据时，用于构造自动机
 
-    char* data;
+    vector<AutoMachineNode*> holder;
+
+    unsigned char* compressed;
+    unsigned char* data;
     int length;
     int pos;
     unsigned int bitPos;
@@ -143,90 +162,48 @@ public:
 
     HuffmanAutoMachine(char* data,int length){
         this->length=length;
-        memcpy(this->data,data,length);
+        memcpy(this->compressed,data,length*sizeof(char));
     }
 
     inline bool nextBit(){
         if(bitPos&8U){
             bitPos=0;
-            pos++;
+            ++pos;
         }
-        return (data[pos])&(1U<<bitPos);
+        return (compressed[pos])&(1U<<bitPos);
+    }
+
+    void createHuffman(){
+        int count[256]={0};
+        for(int i=0;i<length;i++){
+            count[data[i]]++;
+        }
+        PriorityQueue<PriorQueueNode> pq;
+        PriorQueueNode a,b;
+        while(true){
+            if(pq.size()==1){
+                head=pq.top();
+                pq.pop();
+                break;
+            }else{
+                pq>>a>>b;
+                pq<<a+b;
+            }
+        }
     }
 
     ~HuffmanAutoMachine(){
-        delete data;
+        for(auto&i:holder){
+            delete(i);
+        }
+        delete compressed;
     }
 
 };
 
 
-namespace HuffmanCompressor{
 
-    template<typename T>
-    class HuffmanTreeNode{
-
-    public:
-
-        int weight;
-        const T* data;
-        HuffmanTreeNode* l,*r;
-
-        HuffmanTreeNode(const T* data,int weight):weight(weight),data(data),l(nullptr),r(nullptr){} // 使用名称和权重初始化
-
-        HuffmanTreeNode(HuffmanTreeNode& a,HuffmanTreeNode& b):weight(a.weight+b.weight),data(nullptr),l(&a),r(&b){} // 将两个节点合并为一个
-
-        bool operator < (const HuffmanTreeNode& b)const{
-            return weight<b.weight;
-        }
-
-        HuffmanTreeNode operator + (const HuffmanTreeNode& b){
-            return HuffmanTreeNode(*this,b);
-        }
-
-    };
-
-
-    template<typename T>
-    static bool ptrCompare(const T*& a,const T*& b){
-        return *a<*b;
-    }
-
-    template<typename T>
-    class HuffmanTree{
-
-    public:
-
-        list<HuffmanTreeNode<T>> cachedNodes;
-        PriorityQueue<T*>* pq;
-        HuffmanTreeNode<T>* head;
-
-        void create(){
-            pq=new PriorityQueue<T*>(&ptrCompare);
-        }
-
-        void createHuffman(){
-            HuffmanTreeNode<T> a,b;
-            while(true){
-                if(pq->size()==1){
-                    head=pq->top();
-                    pq->pop();
-                    break;
-                }else{
-                    pq>>a>>b;
-                    pq<<a+b;
-                }
-            }
-        }
-
-    };
-
-}
-
-
-using namespace HuffmanCompressor;
 
 int main(){
-    int a;
-    HuffmanTreeNode<int> h(&a,1);
+
 }
