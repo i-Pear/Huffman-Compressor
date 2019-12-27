@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 
 using namespace std;
+typedef unsigned char uchar;
 
 template<typename T>
 class PriorityQueue{
@@ -149,9 +150,10 @@ public:
     int head;
 
 
-    HuffmanEncoder(char*data,int length){
+    HuffmanEncoder(uchar*data,int length){
         this->dataLength=length;
-        memcpy(this->data,data,length*sizeof(char));
+        this->data=new uchar[length];
+        memcpy(this->data,data,length*sizeof(uchar));
 
         head=0;
         bitPos=pos=0;
@@ -168,7 +170,7 @@ public:
         PriorityQueue<PriorQueueNode> pq;
         for(int i=0;i<256;i++){
             if(count[i]){
-                dict.push_back({0,0,0});
+                dict.push_back({i,0,0});
                 pq.insert({pq.size()-1,count[i]});
             }
         }
@@ -181,6 +183,8 @@ public:
             }else{
                 pq>>a>>b;
                 dict.push_back({0,a.id,b.id});
+                dict.back().zero=a.id;
+                dict.back().one=b.id;
                 pq.insert({pq.size()-1,a.weight+b.weight});
             }
         }
@@ -221,8 +225,8 @@ public:
 
     HuffmanDecoder(char*data,int length){
         this->dataLength=length;
+        data=new char[length*sizeof(char)];
         memcpy(this->data,data,length*sizeof(char));
-
         head=0;
         bitPos=pos=0;
     }
@@ -249,5 +253,10 @@ public:
 
 
 int main(){
+    char* str="122333444455555666666";
+    HuffmanEncoder encoder((uchar*)str,21);
+    encoder.createHuffman();
+    int i;
+    i=1;
 
 }
