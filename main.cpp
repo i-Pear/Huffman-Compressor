@@ -136,7 +136,7 @@ public:
         PriorQueueNode(){}
 
         bool operator<(const PriorQueueNode &b) const{
-            return weight<b.weight;
+            return weight>b.weight;
         }
 
     }; // 创建哈弗曼树时，用于优先队列节点
@@ -167,11 +167,11 @@ public:
         for(int i=0;i<dataLength;i++){
             count[data[i]]++;
         }
-        PriorityQueue<PriorQueueNode> pq;
+        priority_queue<PriorQueueNode> pq;
         for(int i=0;i<256;i++){
             if(count[i]){
                 dict.push_back({i,0,0});
-                pq.insert({pq.size()-1,count[i]});
+                pq.push({dict.size()-1,count[i]});
             }
         }
         PriorQueueNode a,b;
@@ -181,11 +181,13 @@ public:
                 pq.pop();
                 break;
             }else{
-                pq>>a>>b;
+                //pq>>a>>b;
+                a=pq.top();pq.pop();
+                b=pq.top();pq.pop();
                 dict.push_back({0,a.id,b.id});
                 dict.back().zero=a.id;
                 dict.back().one=b.id;
-                pq.insert({pq.size()-1,a.weight+b.weight});
+                pq.push({dict.size()-1,a.weight+b.weight});
             }
         }
     }
