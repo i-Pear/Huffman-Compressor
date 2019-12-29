@@ -71,15 +71,15 @@ public:
         lessCompare=defaultCompare;
     }
 
-    PriorityQueue(bool(*cmp)(const T &,const T &)) : __size(0),capacity(INIT_CAPACITY){
+    explicit PriorityQueue(bool(*cmp)(const T &,const T &)) : __size(0),capacity(INIT_CAPACITY){
         data=new T[capacity];
         lessCompare=cmp;
-    }
+}
 
     void insert(const T &val){
         if(__size+1==capacity)enlarge();
-        data[__size++]=val;
-        shiftUp(__size-1);
+        data[++__size]=val;
+        shiftUp(__size);
     }
 
     const T &top() const{
@@ -167,11 +167,11 @@ public:
         for(int i=0;i<dataLength;i++){
             count[data[i]]++;
         }
-        priority_queue<PriorQueueNode> pq;
+        PriorityQueue<PriorQueueNode> pq;
         for(int i=0;i<256;i++){
             if(count[i]){
-                dict.push_back({i,0,0});
-                pq.push({dict.size()-1,count[i]});
+                dict.push_back({(char)i,0,0});
+                pq.insert({int(dict.size()-1),count[i]});
             }
         }
         PriorQueueNode a,b;
@@ -181,13 +181,11 @@ public:
                 pq.pop();
                 break;
             }else{
-                //pq>>a>>b;
-                a=pq.top();pq.pop();
-                b=pq.top();pq.pop();
+                pq>>a>>b;
                 dict.push_back({0,a.id,b.id});
                 dict.back().zero=a.id;
                 dict.back().one=b.id;
-                pq.push({dict.size()-1,a.weight+b.weight});
+                pq.insert({int(dict.size()-1),a.weight+b.weight});
             }
         }
     }
@@ -255,10 +253,15 @@ public:
 
 
 int main(){
-    char* str="122333444455555666666";
-    HuffmanEncoder encoder((uchar*)str,21);
-    encoder.createHuffman();
-    int i;
-    i=1;
+    PriorityQueue<int> q;
+    for(int i=10;i>=-10;i--){
+        q<<i;
+    }
 
+    while(!q.empty()){
+        cout<<"size="<<q.size()<<endl;
+        int t;
+        q>>t;
+        cout<<t<<endl;
+    }
 }
