@@ -119,7 +119,7 @@ class HuffmanEncoder{
 public:
 
     struct node{
-        char content;
+        unsigned char content;
         int zero;
         int one;
     };
@@ -151,7 +151,6 @@ public:
 
     // Should write to file:
     // head / dataLength / dict / compressed
-
 
     HuffmanEncoder(uchar*data,int length){
         this->dataLength=length;
@@ -192,22 +191,29 @@ public:
                 pq.insert({int(dict.size()-1),count[i]});
             }
         }
-        PriorQueueNode a,b;
-        while(true){
-            if(pq.size()==1){
-                head=pq.top().id;
-                pq.pop();
-                break;
-            }else{
-                pq>>a>>b;
-                dict.push_back({0,a.id,b.id});
-                dict.back().zero=a.id;
-                dict.back().one=b.id;
-                pq.insert({int(dict.size()-1),a.weight+b.weight});
-            }
-        }
 
-        calculateEncoding(head);
+        if(pq.size()!=1){
+            PriorQueueNode a,b;
+            while(true){
+                if(pq.size()==1){
+                    head=pq.top().id;
+                    pq.pop();
+                    break;
+                }else{
+                    pq>>a>>b;
+                    dict.push_back({0,a.id,b.id});
+                    dict.back().zero=a.id;
+                    dict.back().one=b.id;
+                    pq.insert({int(dict.size()-1),a.weight+b.weight});
+                }
+            }
+            calculateEncoding(head);
+        }else{
+            encoding[dict[0].content].push_back(true);
+            dict[0].one=1;
+            dict.push_back({dict[0].content,0,0});
+            head=0;
+        }
 
         for(int i=0;i<dataLength;i++){
             for(auto&c:encoding[data[i]]){
@@ -237,7 +243,7 @@ public:
         int dictSize=dict.size();
         ofs.write((char*)&dictSize,sizeof(dictSize));
         for(auto&i:dict){
-            ofs.write(&i.content,sizeof(i.content));
+            ofs.write((char*)&i.content,sizeof(i.content));
             ofs.write((char*)&i.zero,sizeof(i.zero));
             ofs.write((char*)&i.one,sizeof(i.one));
         }
@@ -351,17 +357,33 @@ public:
 };
 
 
+long getFileLength(const string& path){
+    ifstream ifs(path,ios::binary);
+    ifs.seekg(0,ios::end);                       // 设置指针到文件流尾部
+    streampos ps = ifs.tellg();                  // 指针距离文件头部的距离，即为文件流大小
+    int len = ps;
+    ifs.close();
+    return len;
+}
+
 
 int main(){
 
-    char* str="123456";
-    HuffmanEncoder encoder((uchar*)str,21);
+    string path="D:\\1";
+    long fileLength=getFileLength(path);
+    char* data=new char[fileLength];
+    ifstream ifs(path,ios::binary);
+    ifs.read(data,fileLength);
+    ifs.close();
+
+    HuffmanEncoder encoder((uchar*)data,fileLength);
     encoder.createHuffman();
     encoder.writeToFile("D:\\1.txt");
 
     HuffmanDecoder decoder;
     decoder.readFromFile("D:\\1.txt");
 
+    cout<<decoder.compressedLength<<" / "<<decoder.dataLength<<endl;
     printf("Compress rate: %.3lf%%",1.0*decoder.compressedLength/decoder.dataLength*100);
 
 }
