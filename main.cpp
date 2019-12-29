@@ -274,6 +274,7 @@ public:
     int dataLength;
     list<bool> encoding[256];
     int head; // 哈夫曼树头结点
+    int compressedLength;
 
 
     HuffmanDecoder(){}
@@ -298,6 +299,7 @@ public:
 
         int length;
         ifs.read((char*)&length,sizeof(length));
+        compressedLength=length;
         char temp;
         for(int i=0;i<length;i++){
             ifs.read((char*)&temp,sizeof(temp));
@@ -317,7 +319,7 @@ public:
         int dataP=0;
 
         bool cnt;
-        for(int i=0;i<dataLength;i++){
+        while(dataP<dataLength){
 
             cnt=(*iter)&(1U<<bitPos);
             bitPos++;
@@ -326,7 +328,7 @@ public:
                 iter++;
             }
 
-            // Step
+            // Jump
             if(cnt){
                 status=dict[status].one;
             }else{
@@ -352,7 +354,7 @@ public:
 
 int main(){
 
-    char* str="122333444455555666666";
+    char* str="123456";
     HuffmanEncoder encoder((uchar*)str,21);
     encoder.createHuffman();
     encoder.writeToFile("D:\\1.txt");
@@ -360,7 +362,6 @@ int main(){
     HuffmanDecoder decoder;
     decoder.readFromFile("D:\\1.txt");
 
-    int t;
-    t=1;
+    printf("Compress rate: %.3lf%%",1.0*decoder.compressedLength/decoder.dataLength*100);
 
 }
