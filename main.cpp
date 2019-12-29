@@ -136,33 +136,48 @@ public:
         PriorQueueNode(){}
 
         bool operator<(const PriorQueueNode &b) const{
-            return weight>b.weight;
+            return weight<b.weight;
         }
 
     }; // 创建哈弗曼树时，用于优先队列节点
 
-    unsigned char*compressed;
-    int compressedLength;
+    list<uchar> compressed;
+
     unsigned char*data;
     int dataLength;
-    int pos;
     unsigned int bitPos;
-    int head;
+    list<bool> encoding[256];
+    int head; // 哈夫曼树头结点
 
 
     HuffmanEncoder(uchar*data,int length){
         this->dataLength=length;
         this->data=new uchar[length];
         memcpy(this->data,data,length*sizeof(uchar));
+        bitPos=8;
+    }
 
-        head=0;
-        bitPos=pos=0;
+    void calculateEncoding(int n){
+        static vector<bool> st;
+        if(dict[n].content){
+            for(bool i:st){
+                encoding[dict[n].content].push_back(i);
+            }
+            return;
+        }else{
+            st.push_back(false);
+            calculateEncoding(dict[n].zero);
+            st.pop_back();
+
+            st.push_back(true);
+            calculateEncoding(dict[n].one);
+            st.pop_back();
+        }
     }
 
     void createHuffman(){
 
         // Can init head
-
         int count[256]={0};
         for(int i=0;i<dataLength;i++){
             count[data[i]]++;
@@ -188,15 +203,41 @@ public:
                 pq.insert({int(dict.size()-1),a.weight+b.weight});
             }
         }
+
+        calculateEncoding(head);
+
     }
 
-    void writeToFile(string path){
+    inline void writeBit(bool t){
+        if(bitPos==8){
+            compressed.push_back(0);
+            bitPos=0;
+        }
+        if(t){
+            compressed.back()|=(1U<<bitPos);
+        }
+        bitPos++;
+    }
 
+    void writeToFile(const string& path){
+        ofstream ofs(path,ios::binary|ios::trunc|ios::out);
+        int dictSize=dict.size();
+        ofs.write((char*)&dictSize,sizeof(dictSize));
+        for(auto&i:dict){
+            ofs.write(&i.content,sizeof(i.content));
+            ofs.write((char*)&i.zero,sizeof(i.zero));
+            ofs.write((char*)&i.one,sizeof(i.one));
+        }
+        int length=compressed.size();
+        ofs.write((char*)&length,sizeof(length));
+        for(auto&i:compressed){
+            ofs.write((char*)&i,sizeof(i));
+        }
+        ofs.close();
     }
 
     ~HuffmanEncoder(){
-        //delete data;
-        //delete compressed;
+        delete[] data;
     }
 
 };
@@ -214,34 +255,44 @@ public:
     };
     vector<node> dict;
 
-    unsigned char*compressed;
-    int compressedLength;
+    list<uchar> compressed;
     unsigned char*data;
     int dataLength;
-    int pos;
     unsigned int bitPos;
-    int head;
+    list<bool> encoding[256];
+    int head; // 哈夫曼树头结点
 
 
-    HuffmanDecoder(char*data,int length){
+    HuffmanDecoder(){
         this->dataLength=length;
         data=new char[length*sizeof(char)];
         memcpy(this->data,data,length*sizeof(char));
         head=0;
-        bitPos=pos=0;
+        bitPos=0;
     }
 
-    void readFromFile(string path){
-
-    }
-
-    inline bool nextBit(){
-        if(bitPos&8U){
-            bitPos=0;
-            ++pos;
+    void readFromFile(const string& path){
+        ifstream ifs(path,ios::binary|ios::in);
+        int dictSize;
+        ifs.read((char*)&dictSize,sizeof(dictSize));
+        char content;
+        int zero,one;
+        for(int i=0;i<dictSize;i++){
+            ifs.read(&content,sizeof(content));
+            ifs.read((char*)&zero,sizeof(zero));
+            ifs.read((char*)&one,sizeof(one));
+            dict.push_back({content,zero,one});
         }
-        return (compressed[pos])&(1U<<bitPos);
+        int length;
+        ifs.read((char*)&length,sizeof(length));
+        char temp;
+        for(int i=0;i<length;i++){
+            ifs.read((char*)&temp,sizeof(temp));
+            compressed.
+        }
+        ifs.close();
     }
+
 
     ~HuffmanDecoder(){
         //delete data;
@@ -253,15 +304,8 @@ public:
 
 
 int main(){
-    PriorityQueue<int> q;
-    for(int i=10;i>=-10;i--){
-        q<<i;
-    }
-
-    while(!q.empty()){
-        cout<<"size="<<q.size()<<endl;
-        int t;
-        q>>t;
-        cout<<t<<endl;
-    }
+    char* str="122333444455555666666";
+    HuffmanEncoder encoder((uchar*)str,21);
+    encoder.createHuffman();
+    encoder.writeToFile("D:\\1.txt");
 }
