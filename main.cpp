@@ -149,6 +149,9 @@ public:
     list<bool> encoding[256];
     int head; // 哈夫曼树头结点
 
+    // Should write to file:
+    // head / dataLength / dict / compressed
+
 
     HuffmanEncoder(uchar*data,int length){
         this->dataLength=length;
@@ -206,6 +209,12 @@ public:
 
         calculateEncoding(head);
 
+        for(int i=0;i<dataLength;i++){
+            for(auto&c:encoding[data[i]]){
+                writeBit(c);
+            }
+        }
+
     }
 
     inline void writeBit(bool t){
@@ -221,6 +230,10 @@ public:
 
     void writeToFile(const string& path){
         ofstream ofs(path,ios::binary|ios::trunc|ios::out);
+
+        ofs.write((char*)&head,sizeof(head));
+        ofs.write((char*)&dataLength,sizeof(dataLength));
+
         int dictSize=dict.size();
         ofs.write((char*)&dictSize,sizeof(dictSize));
         for(auto&i:dict){
@@ -228,11 +241,13 @@ public:
             ofs.write((char*)&i.zero,sizeof(i.zero));
             ofs.write((char*)&i.one,sizeof(i.one));
         }
+
         int length=compressed.size();
         ofs.write((char*)&length,sizeof(length));
         for(auto&i:compressed){
             ofs.write((char*)&i,sizeof(i));
         }
+
         ofs.close();
     }
 
@@ -241,7 +256,6 @@ public:
     }
 
 };
-
 
 
 class HuffmanDecoder{
@@ -258,21 +272,19 @@ public:
     list<uchar> compressed;
     unsigned char*data;
     int dataLength;
-    unsigned int bitPos;
     list<bool> encoding[256];
     int head; // 哈夫曼树头结点
 
 
-    HuffmanDecoder(){
-        this->dataLength=length;
-        data=new char[length*sizeof(char)];
-        memcpy(this->data,data,length*sizeof(char));
-        head=0;
-        bitPos=0;
-    }
+    HuffmanDecoder(){}
 
     void readFromFile(const string& path){
         ifstream ifs(path,ios::binary|ios::in);
+
+        ifs.read((char*)&head,sizeof(head));
+        ifs.read((char*)&dataLength,sizeof(dataLength));
+        this->data=new uchar[dataLength];
+
         int dictSize;
         ifs.read((char*)&dictSize,sizeof(dictSize));
         char content;
@@ -283,20 +295,55 @@ public:
             ifs.read((char*)&one,sizeof(one));
             dict.push_back({content,zero,one});
         }
+
         int length;
         ifs.read((char*)&length,sizeof(length));
         char temp;
         for(int i=0;i<length;i++){
             ifs.read((char*)&temp,sizeof(temp));
-            compressed.
+            compressed.push_back(temp);
         }
+
         ifs.close();
+
+        decode();
     }
 
+    void decode(){
+
+        int bitPos=0;
+        int status=head;
+        auto iter=compressed.begin();
+        int dataP=0;
+
+        bool cnt;
+        for(int i=0;i<dataLength;i++){
+
+            cnt=(*iter)&(1U<<bitPos);
+            bitPos++;
+            if(bitPos==8){
+                bitPos=0;
+                iter++;
+            }
+
+            // Step
+            if(cnt){
+                status=dict[status].one;
+            }else{
+                status=dict[status].zero;
+            }
+
+            // Check if it is destination
+            if(dict[status].content){
+                data[dataP++]=dict[status].content;
+                status=head;
+            }
+        }
+
+    }
 
     ~HuffmanDecoder(){
-        //delete data;
-        //delete compressed;
+        delete[] data;
     }
 
 };
@@ -304,8 +351,16 @@ public:
 
 
 int main(){
+
     char* str="122333444455555666666";
     HuffmanEncoder encoder((uchar*)str,21);
     encoder.createHuffman();
     encoder.writeToFile("D:\\1.txt");
+
+    HuffmanDecoder decoder;
+    decoder.readFromFile("D:\\1.txt");
+
+    int t;
+    t=1;
+
 }
