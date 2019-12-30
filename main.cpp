@@ -316,6 +316,9 @@ public:
     void readFromFile(const string& path){
         ifstream ifs(path,ios::binary|ios::in);
 
+        char* test=(char*)malloc(sizeof(identifier));
+        ifs.read((char*)test,sizeof(identifier));
+
         ifs.read((char*)&head,sizeof(head));
         ifs.read((char*)&dataLength,sizeof(dataLength));
         this->data=new uchar[dataLength];
