@@ -3,6 +3,8 @@
 using namespace std;
 typedef unsigned char uchar;
 
+const char identifier[]="H-Compressor V1.0";
+
 template<typename T>
 class PriorityQueue{
 
@@ -252,6 +254,8 @@ public:
     void writeToFile(const string& path){
         ofstream ofs(path,ios::binary|ios::trunc|ios::out);
 
+        ofs.write((char*)identifier,sizeof(identifier));
+
         ofs.write((char*)&head,sizeof(head));
         ofs.write((char*)&dataLength,sizeof(dataLength));
 
@@ -299,6 +303,13 @@ public:
     int head; // 哈夫曼树头结点
     int compressedLength;
 
+    static bool verify(const string& path){
+        ifstream ifs(path,ios::binary|ios::in);
+        char* test=(char*)malloc(sizeof(identifier));
+        ifs.read((char*)test,sizeof(identifier));
+        ifs.close();
+        return strcmp(test,identifier)==0;
+    }
 
     HuffmanDecoder(){}
 
@@ -384,14 +395,15 @@ public:
 
 int main(int argc,char* argv[]){
 
-    if(argc!=4){
+    if(argc!=3){
         cout<<"Argument ERROR"<<endl;
+        getchar();
         return 1;
     }
 
-    string mode=argv[1];
-    string source=argv[2];
-    string dest=argv[3];
+    string mode=argv[0];
+    string source=argv[1];
+    string dest=argv[2];
 
     if(mode=="compress"){
 
@@ -406,6 +418,12 @@ int main(int argc,char* argv[]){
 
     }else if(mode=="extract"){
 
+        bool check=HuffmanDecoder::verify(source);
+        if(!check){
+            cout<<"File is damaged."<<endl;
+            return 1;
+        }
+
         HuffmanDecoder decoder;
         decoder.readFromFile(source);
         decoder.writeToFile(dest);
@@ -417,6 +435,6 @@ int main(int argc,char* argv[]){
     }
 
     cout<<"\nProgram complete."<<endl;
-    //getchar();
+    getchar();
 
 }
