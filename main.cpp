@@ -395,15 +395,15 @@ public:
 
 int main(int argc,char* argv[]){
 
-    if(argc!=3){
+    if(argc!=4){
         cout<<"Argument ERROR"<<endl;
         getchar();
         return 1;
     }
 
-    string mode=argv[0];
-    string source=argv[1];
-    string dest=argv[2];
+    string mode=argv[1];
+    string source=argv[2];
+    string dest=argv[3];
 
     if(mode=="compress"){
 
