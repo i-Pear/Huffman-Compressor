@@ -3,4 +3,4 @@ project(HCompressor)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(HCompressor main.cpp)
+add_executable(HCompressor main.cpp PriorityQueue.h HuffmanEncoder.h HuffmanDecoder.h HuffmanDecoder.cpp HuffmanEncoder.cpp)

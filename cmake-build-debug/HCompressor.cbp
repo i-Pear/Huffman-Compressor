@@ -80,6 +80,21 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/cygdrive/d/Projects/HCompressor/HuffmanDecoder.cpp">
+			<Option target="HCompressor"/>
+		</Unit>
+		<Unit filename="/cygdrive/d/Projects/HCompressor/HuffmanDecoder.h">
+			<Option target="HCompressor"/>
+		</Unit>
+		<Unit filename="/cygdrive/d/Projects/HCompressor/HuffmanEncoder.cpp">
+			<Option target="HCompressor"/>
+		</Unit>
+		<Unit filename="/cygdrive/d/Projects/HCompressor/HuffmanEncoder.h">
+			<Option target="HCompressor"/>
+		</Unit>
+		<Unit filename="/cygdrive/d/Projects/HCompressor/PriorityQueue.h">
+			<Option target="HCompressor"/>
+		</Unit>
 		<Unit filename="/cygdrive/d/Projects/HCompressor/main.cpp">
 			<Option target="HCompressor"/>
 		</Unit>
